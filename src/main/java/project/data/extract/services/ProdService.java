@@ -4,10 +4,10 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import project.data.extract.entities.journey.*;
+import project.data.extract.entities.*;
 import project.data.extract.exceptions.NoApplicationFoundException;
 import project.data.extract.models.LocalFilesProp;
-import project.data.extract.repositories.JourneyApplicationRepository;
+import project.data.extract.repositories.ProdRepo;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -24,51 +24,51 @@ import java.util.stream.Collectors;
 @Qualifier("ProdService")
 public class ProdService {
     @Autowired
-    JourneyApplicationRepository.FnaDtls_Repo fnaDtlsRepo;
+    ProdRepo.FnaDtls_Repo fnaDtlsRepo;
     @Autowired
-    JourneyApplicationRepository.FnaHdr_Repo fnaHdrRepo;
+    ProdRepo.FnaHdr_Repo fnaHdrRepo;
     @Autowired
-    JourneyApplicationRepository.LeadInfo_Repo leadInfoRepo;
+    ProdRepo.LeadInfo_Repo leadInfoRepo;
     @Autowired
-    JourneyApplicationRepository.LeadReferror_Repo leadReferrorRepo;
+    ProdRepo.LeadReferror_Repo leadReferrorRepo;
     @Autowired
-    JourneyApplicationRepository.Contract_Repo contractRepo;
+    ProdRepo.Contract_Repo contractRepo;
     @Autowired
-    JourneyApplicationRepository.ContractApplication_Repo contractApplicationRepo;
+    ProdRepo.ContractApplication_Repo contractApplicationRepo;
     @Autowired
-    JourneyApplicationRepository.ContractAnswer_Repo contractAnswerRepo;
+    ProdRepo.ContractAnswer_Repo contractAnswerRepo;
     @Autowired
-    JourneyApplicationRepository.ContractBeneficiary_Repo contractBeneficiaryRepo;
+    ProdRepo.ContractBeneficiary_Repo contractBeneficiaryRepo;
     @Autowired
-    JourneyApplicationRepository.ContractFund_Repo contractFundRepo;
+    ProdRepo.ContractFund_Repo contractFundRepo;
     @Autowired
-    JourneyApplicationRepository.ContractPartyRelation_Repo contractPartyRelationRepo;
+    ProdRepo.ContractPartyRelation_Repo contractPartyRelationRepo;
     @Autowired
-    JourneyApplicationRepository.ContractPremium_Repo contractPremiumRepo;
+    ProdRepo.ContractPremium_Repo contractPremiumRepo;
     @Autowired
-    JourneyApplicationRepository.ContractQuotation_Repo contractQuotationRepo;
+    ProdRepo.ContractQuotation_Repo contractQuotationRepo;
     @Autowired
-    JourneyApplicationRepository.ContractRider_Repo contractRiderRepo;
+    ProdRepo.ContractRider_Repo contractRiderRepo;
     @Autowired
-    JourneyApplicationRepository.ContractSignature_Repo contractSignatureRepo;
+    ProdRepo.ContractSignature_Repo contractSignatureRepo;
     @Autowired
-    JourneyApplicationRepository.ContractTransaction_Repo contractTransactionRepo;
+    ProdRepo.ContractTransaction_Repo contractTransactionRepo;
     @Autowired
-    JourneyApplicationRepository.Document_Repo documentRepo;
+    ProdRepo.Document_Repo documentRepo;
     @Autowired
-    JourneyApplicationRepository.Party_Repo partyRepo;
+    ProdRepo.Party_Repo partyRepo;
     @Autowired
-    JourneyApplicationRepository.PartyAddress_Repo partyAddressRepo;
+    ProdRepo.PartyAddress_Repo partyAddressRepo;
     @Autowired
-    JourneyApplicationRepository.PartyContact_Repo partyContactRepo;
+    ProdRepo.PartyContact_Repo partyContactRepo;
     @Autowired
-    JourneyApplicationRepository.PartyPerson_Repo partyPersonRepo;
+    ProdRepo.PartyPerson_Repo partyPersonRepo;
     @Autowired
-    JourneyApplicationRepository.RiskProfile_Repo riskProfileRepo;
+    ProdRepo.RiskProfile_Repo riskProfileRepo;
     @Autowired
-    JourneyApplicationRepository.RiskProfileAnswer_Repo riskProfileAnswerRepo;
+    ProdRepo.RiskProfileAnswer_Repo riskProfileAnswerRepo;
     @Autowired
-    JourneyApplicationRepository.ContractBeneOwner_Repo contractBeneOwnerRepo;
+    ProdRepo.ContractBeneOwner_Repo contractBeneOwnerRepo;
 
     @Autowired @Getter private LocalFilesProp filesProp;
 
@@ -162,7 +162,7 @@ public class ProdService {
             }
 
             LM_LEAD_INFO lead = leadInfoRepo.findById(leadId).orElse(null);
-            LM_LEAD_REFERROR referror = leadReferrorRepo.findById(application.getId()).orElse(null);
+            LM_LEAD_REFERROR referror = leadReferrorRepo.findById(leadId).orElse(null);
 
             TreeSet<String> partyPersons = new TreeSet<>();
             if (quotation!=null){
@@ -193,37 +193,37 @@ public class ProdService {
             // GETTING INSERT STATEMENTS
             List<Map<String, Map<String, String>>> tables = new ArrayList<>();
 
-            tables.add(application.writeInsertQuery(filesProp));
-            contract.forEach(cntrt -> tables.add(cntrt==null ? null : cntrt.writeInsertQuery(filesProp)));
-            beneficiaries.forEach(bene -> tables.add(bene==null ? null : bene.writeInsertQuery(filesProp)));
-            funds.forEach(fund -> tables.add(fund==null ? null : fund.writeInsertQuery(filesProp)));
-            relations.forEach(relation -> tables.add(relation==null ? null : relation.writeInsertQuery(filesProp)));
+            tables.add(application.writeAllTable(filesProp));
+            contract.forEach(cntrt -> tables.add(cntrt==null ? null : cntrt.writeAllTable(filesProp)));
+            beneficiaries.forEach(bene -> tables.add(bene==null ? null : bene.writeAllTable(filesProp)));
+            funds.forEach(fund -> tables.add(fund==null ? null : fund.writeAllTable(filesProp)));
+            relations.forEach(relation -> tables.add(relation==null ? null : relation.writeAllTable(filesProp)));
 
-            premiums.forEach(prem -> tables.add(prem ==null ? null : prem.writeInsertQuery(filesProp)));
-            riders.forEach(rider -> tables.add(rider==null ? null : rider.writeInsertQuery(filesProp)));
-            signatures.forEach(signature -> tables.add(signature==null ? null : signature.writeInsertQuery(filesProp)));
-            transactions.forEach(transact -> tables.add(transact==null ? null : transact.writeInsertQuery(filesProp)));
-            beneOwners.forEach(beneOwner -> tables.add(beneOwner==null ? null : beneOwner.writeInsertQuery(filesProp)));
+            premiums.forEach(prem -> tables.add(prem ==null ? null : prem.writeAllTable(filesProp)));
+            riders.forEach(rider -> tables.add(rider==null ? null : rider.writeAllTable(filesProp)));
+            signatures.forEach(signature -> tables.add(signature==null ? null : signature.writeAllTable(filesProp)));
+            transactions.forEach(transact -> tables.add(transact==null ? null : transact.writeAllTable(filesProp)));
+            beneOwners.forEach(beneOwner -> tables.add(beneOwner==null ? null : beneOwner.writeAllTable(filesProp)));
 
-            tables.add(quotation==null ? null : quotation.writeInsertQuery(filesProp));
-            contractAnswer.forEach(answer -> tables.add(answer==null ? null : answer.writeInsertQuery(filesProp)));
+            tables.add(quotation==null ? null : quotation.writeAllTable(filesProp));
+            contractAnswer.forEach(answer -> tables.add(answer==null ? null : answer.writeAllTable(filesProp)));
 
-            tables.add(riskProfile==null ? null : riskProfile.writeInsertQuery(filesProp));
-            riskProfileAnswers.forEach(riskAnswer -> tables.add(riskAnswer==null ? null : riskAnswer.writeInsertQuery(filesProp)));
+            tables.add(riskProfile==null ? null : riskProfile.writeAllTable(filesProp));
+            riskProfileAnswers.forEach(riskAnswer -> tables.add(riskAnswer==null ? null : riskAnswer.writeAllTable(filesProp)));
 
-            tables.add(fnaHeader==null ? null : fnaHeader.writeInsertQuery(filesProp));
-            fnaDetails.forEach(fnaDtls -> tables.add(fnaDtls==null ? null : fnaDtls.writeInsertQuery(filesProp)));
-            tables.add(lead==null ? null : lead.writeInsertQuery(filesProp));
-            tables.add(referror==null ? null : referror.writeInsertQuery(filesProp));
+            tables.add(fnaHeader==null ? null : fnaHeader.writeAllTable(filesProp));
+            fnaDetails.forEach(fnaDtls -> tables.add(fnaDtls==null ? null : fnaDtls.writeAllTable(filesProp)));
+            tables.add(lead==null ? null : lead.writeAllTable(filesProp));
+            tables.add(referror==null ? null : referror.writeAllTable(filesProp));
 
-            party.forEach(x -> tables.add(x==null ? null : x.writeInsertQuery(filesProp)));
-            partyAddrs.forEach(x -> tables.add(x==null ? null : x.writeInsertQuery(filesProp)));
-            partyContacts.forEach(x -> tables.add(x==null ? null : x.writeInsertQuery(filesProp)));
-            partyPeople.forEach(x -> tables.add(x==null ? null : x.writeInsertQuery(filesProp)));
-            documents.forEach(x -> tables.add(x==null ? null : x.writeInsertQuery(filesProp)));
+            party.forEach(x -> tables.add(x==null ? null : x.writeAllTable(filesProp)));
+            partyAddrs.forEach(x -> tables.add(x==null ? null : x.writeAllTable(filesProp)));
+            partyContacts.forEach(x -> tables.add(x==null ? null : x.writeAllTable(filesProp)));
+            partyPeople.forEach(x -> tables.add(x==null ? null : x.writeAllTable(filesProp)));
+            documents.forEach(x -> tables.add(x==null ? null : x.writeAllTable(filesProp)));
 
-            //GETTING SELECT STATEMENT
-            application.writeSelectQuery(tables, filesProp);
+//            GETTING SELECT STATEMENT
+            application.getSelect(tables, filesProp);
 
         }else{
             throw new NoApplicationFoundException("No Application "+polNo+" Found!");

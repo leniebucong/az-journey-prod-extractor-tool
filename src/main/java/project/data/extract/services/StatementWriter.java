@@ -13,12 +13,9 @@ import java.util.*;
 public class StatementWriter {
 
     public String getFieldName(String field){return field;};
-    public void maskConfidentialData(){};
 
     /*ORIGINAL METHOD*/
-    public Map<String,Map<String, String>> writeInsertQuery(LocalFilesProp filesProp){
-
-        maskConfidentialData();
+    public Map<String,Map<String, String>> writeAllTable(LocalFilesProp filesProp){
 
         //OBJECT USED FOR GENERATING SELECT QUERY
         Map<String,Map<String, String>> tables = new TreeMap<>();   //return value
@@ -38,6 +35,8 @@ public class StatementWriter {
             //Write insert statement to each table
             File file = new File(filesProp.getInsert_scripts_dir()+"/"+tableName+ ".sql");
             PrintWriter tableWriter = new PrintWriter(new FileWriter(file, true));
+
+            //END WRITE PER EACH TABLE
 
                 //Getting fieldNames and Values
                 for (Field field : thisClass.getDeclaredFields()) {
@@ -66,7 +65,7 @@ public class StatementWriter {
                     insertValues.append(",");
                 }
 
-            String insertStatement = insertKeys == null ? null : "INSERT INTO "+tableName+"@dss (" + insertKeys.substring(0, (insertKeys.length() - 1)) + ") VALUES (" + insertValues.substring(0, (insertValues.length() - 1)) + "); COMMIT;";
+            String insertStatement = insertKeys == null ? null : "INSERT INTO "+tableName+" (" + insertKeys.substring(0, (insertKeys.length() - 1)) + ") VALUES (" + insertValues.substring(0, (insertValues.length() - 1)) + "); COMMIT;";
 
             writerForInsertStatement.println(insertStatement);
             tableWriter.println(insertStatement);
@@ -91,7 +90,7 @@ public class StatementWriter {
         writer.close();
     };
 
-    public void writeSelectQuery(List<Map<String,Map<String, String>>> tables, LocalFilesProp filesProp) throws IOException {
+    public void getSelect(List<Map<String,Map<String, String>>> tables, LocalFilesProp filesProp) throws IOException {
 
         String selectSql = filesProp.getSelect_queries_file();
 
